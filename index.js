@@ -9,9 +9,9 @@ window.onload = function () {
 	 * @param       {URLSearchParams} query
 	 * @returns     {Promise<JSON>}
 	 */
-	async function submit(url, query) {
+	async function submit(url, query, method) {
 		// console.log("Query: " + query);
-		const response = await fetch(url + query, { method: "GET" });
+		const response = await fetch(url + query, { method: method });
 
 		switch (response.status) {
 			case 200:
@@ -50,7 +50,8 @@ window.onload = function () {
 		// Construct the query
 		const data = await submit(
 			"https://images-api.nasa.gov/search?",
-			new URLSearchParams({ q: query })
+			new URLSearchParams({ q: query }),
+            "GET"
 		);
 
 		// Check if the data is null
@@ -85,7 +86,7 @@ window.onload = function () {
 		const queries = new URLSearchParams(split[1]);
 
 		// Submit the request
-		const data = await submit(split[0] + "?", queries);
+		const data = await submit(split[0] + "?", queries, "GET");
 
 		// Check if the data is null
 		if (data.collection.items.length === 0) {
@@ -114,7 +115,9 @@ window.onload = function () {
 	 * @param       {json} data
 	 * @returns     {void}
 	 */
-	function displaySearchResults(data) {
+	async function displaySearchResults(data) {
+        let videos = []
+
 		console.log(data);
 		title = document.querySelector(".results");
 		title.style.color = "black";
@@ -127,9 +130,12 @@ window.onload = function () {
 					title.appendChild(createImageElement(data.collection.items[i]));
 					break;
 				case "audio":
-                    console.log(data.collection.items[i]);
+                    title.appendChild(await createAudioElement(data.collection.items[i]));
 					break;
 				case "video":
+                    const video = await createVideoElement(data.collection.items[i]);
+                    videos.push([data.collection.items[i].href, await video]);
+                    title.appendChild(await video);
 					break;
 				default:
 					break;
@@ -151,6 +157,7 @@ window.onload = function () {
         }
 
         enableCSS();
+        loadVideos(videos);
     }
 
     /**
@@ -220,13 +227,118 @@ window.onload = function () {
     }
 
     /**
-     * @description Creates an audio to return to the DOM
+     * @description Creates an audio element to return to the DOM
      * @param       {json} data
      * @returns     {HTMLDivElement}
      */
-    function createAudioElement(data) {
+    async function createAudioElement(data) {
         // first, request the audio file from the json data
         // then, create the audio element
+        // finally, return the audio element
+
+        // Create the parent div
+        const div = document.createElement("div");
+        div.classList.add("resultInstance");
+
+        // Create the title
+        const title = document.createElement("h2");
+        title.classList.add("resultInstanceTitle");
+        title.innerText = data.data[0].title;
+        // Append the title to the parent div
+        div.appendChild(title);
+
+        // Fetch the audio file
+        const fetchURL = await submit(data.href, "", "GET");
+        audioURL = await fetchURL[0];
+        
+        // Create the audio element
+        const audioElement = document.createElement("video");
+        audioElement.controls = true;
+
+        // Create the source element
+        const source = document.createElement("source");
+        source.src = audioURL;
+        
+        // Append the source to the audio element
+        audioElement.appendChild(source);
+
+        // Append the audio to the parent div
+        div.appendChild(audioElement);
+
+        return div;
+    }
+
+    /**
+     * @description Creates a video element to return to the DOM
+     * @param       {json} data
+     * @returns     {HTMLDivElement, URL}
+     */
+    async function createVideoElement(data) {
+        // first, request the video file from the json data
+        // then, create the video element
+        // finally, return the audio element
+
+        // Create the parent div
+        const div = document.createElement("div");
+        div.classList.add("resultInstance");
+
+        // Create the title
+        const title = document.createElement("h2");
+        title.classList.add("resultInstanceTitle");
+        title.innerText = data.data[0].title;
+        // Append the title to the parent div
+        div.appendChild(title);
+
+        // Create the video element
+        const videoElement = document.createElement("video");
+        videoElement.controls = true;
+        videoElement.preload = "none";
+        videoElement.poster = data.links[0].href;
+        videoElement.href = data.links[0].href;
+        videoElement.classList.add("resultInstanceThumbnail");
+        
+        // This can be moved
+        // Fetch the video file
+        //const fetchURL = await submit(data.href, "", "GET");
+        //audioURL = await fetchURL[0];
+        
+        // Create the video element
+        const audioElement = document.createElement("video");
+        audioElement.controls = true;
+
+        // Create the source element
+        const source = document.createElement("source");
+        // This can be moved
+        //source.src = audioURL;
+        
+        // Append the source to the video element
+        audioElement.appendChild(source);
+
+        // Append the video to the parent div
+        div.appendChild(audioElement);
+
+        return div;
+    }
+
+    /**
+     * @async
+     * @description Assigns the video URLs to the video elements after everything else has loaded
+     * @param {HTMLElement, URL} videos 
+     */
+    async function loadVideos(videos) {
+        // Iterate through the videos
+        console.log(videos);
+        
+        for (video in videos) {
+            console.log(videos[video]);
+            const fetchURL = await submit(videos[video][0], "", "GET");
+            console.log(fetchURL);
+            const url = await fetchURL[0];
+            videos[video][1].querySelector("source").src = url;
+            videos[video][1].addEventListener("load", function() {
+                videos[video][1].querySelector("video").load();
+            });
+        };
         
     }
 
