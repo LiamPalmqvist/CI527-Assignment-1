@@ -124,41 +124,55 @@ window.onload = function () {
 		for (let i = 0; i < data.collection.items.length; i++) {
 			switch (data.collection.items[i].data[0].media_type) {
 				case "image":
-					displayImage(data.collection.items[i], title);
+					title.appendChild(createImageElement(data.collection.items[i]));
 					break;
 				case "audio":
+                    console.log(data.collection.items[i]);
 					break;
 				case "video":
 					break;
 				default:
 					break;
 			}
+        }
 
-			// Check if the data has a next link
-			if (!data.collection.links || data.collection.links.length == 0) {
-			} else {
-				document.querySelector(".results").innerHTML += "<h2>More Results:</h2>";
-				document.querySelector(".results").innerHTML += "<a class='nextLink' href=" + data.collection.links[0].href + ">" +	data.collection.links[0].prompt + "</a><br>";
-				const nextLink = document.querySelector(".nextLink");
-				nextLink.addEventListener("click", function (event) {
-					event.preventDefault();
-					requestNext();
-				});
-			}
+        // Check if the data has a next link
+        if (!data.collection.links || data.collection.links.length == 0) {
+        } else {
+            document.querySelector(".results").innerHTML += "<h2>More Results:</h2>";
+            document.querySelector(".results").innerHTML += "<a class='nextLink' href=" + data.collection.links[0].href + ">" +	data.collection.links[0].prompt + "</a><br>";
+            const nextLink = document.querySelector(".nextLink");
+            nextLink.addEventListener("click", function (event) {
+                event.preventDefault();
+                document.body.scrollTop = 0; // For Safari
+                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+                requestNext();
+            });
+        }
 
-			enableCSS();
-		}
+        enableCSS();
     }
 
     /**
-     * @description Adds an image to the DOM
+     * @description Creates an image to return to the DOM
      * @param       {json} data
      * @param       {HTMLElement} results
-     * @returns     {void}
+     * @returns     {HTMLDivElement}
      */
-    function displayImage(data, results) {
+    function createImageElement(data) {
+        // Create the parent div
+        const div = document.createElement("div");
+        div.classList.add("resultInstance");
+        
+        // Create the title
+        const title = document.createElement("h2");
+        title.classList.add("resultInstanceTitle");
+        title.innerText = data.data[0].title;
+        // Append the title to the parent div
+        div.appendChild(title);
+        
         // Find the thumbnail image
-        console.log(data);
+        // console.log(data);
         const links = data.links;
         let thumbnail = "";
         try {
@@ -188,23 +202,32 @@ window.onload = function () {
             console.log("No image found at " + i + ". Please try again.");
         }
 
-        try {
-            results.innerHTML += `
-        <div class='resultInstance'>
-            <h2 class=resultInstanceTitle>` + data.data[0].title + " (" + i +	")" +`</h2>
-            <a class='resultInstanceLink' href='` + href +`'>
-                <img class='resultInstanceThumbnail' src='` + thumbnail + "' alt='" + data.data[0].title +`'>
-            </a>
-        </div>`;
-        } catch (e) {
-            if (e instanceof TypeError) {
-                console.log(e);
-                console.log(
-                    "No results found at " + i + ". Please try again."
-                );
-            }
-        }
-        console.log("Done");
+        // Create the link
+        const link = document.createElement("a");
+        link.classList.add("resultInstanceLink");
+        link.href = href;
+
+        // Create the thumbnail
+        const image = document.createElement("img");
+        image.classList.add("resultInstanceThumbnail");
+        image.src = thumbnail;
+        image.alt = data.data[0].title;
+        link.appendChild(image);
+        // Append the thumbnail to the link
+        div.appendChild(link);
+        // Append the link to the parent div
+        return div;
+    }
+
+    /**
+     * @description Creates an audio to return to the DOM
+     * @param       {json} data
+     * @returns     {HTMLDivElement}
+     */
+    function createAudioElement(data) {
+        // first, request the audio file from the json data
+        // then, create the audio element
+        
     }
 
 	/**
