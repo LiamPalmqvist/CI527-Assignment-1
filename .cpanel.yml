@@ -1,0 +1,7 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/LP889/subdomains/nasa
+    - /bin/cp index.html $DEPLOYPATH
+    - /bin/cp index.css $DEPLOYPATH
+    - /bin/cp index.js $DEPLOYPATH
