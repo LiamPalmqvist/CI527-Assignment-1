@@ -8,21 +8,73 @@
 .body {
     width: 100%;
     padding: 0 5% 0 5%;
-    background-color: lightblue;
+    background-color: #F1F2F8;
+    overflow-clip: true;
+}
+
+#searchContainer {
+    display: flex;
+    width: min(100%, 600px);
+    height: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#searchInput {
+    height: 40px;
+    position: relative;
+    flex: 1;
+    margin-right: 10px;
+}
+
+#search {
+    position: absolute;
+    border-radius: 1000px;
+    height: 100%;
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 90px;
+
+    background: #DDDFEC;
+    border: none;
+    -webkit-box-shadow: inset 10px 10px 12px -10px #b2b8d5;
+    -moz-box-shadow: inset 10px 10px 12px -10px #b2b8d5;
+    box-shadow: inset 10px 10px 12px -10px #b2b8d5;
+
+    transition: all 0.2s ease-in-out;
+} #search:focus {
+    outline: none;
+    background: #e6e8f2;
+  }
+
+#submit {
+    position: absolute;
+    border-radius: 1000px;
+    height: calc(100% - 12px);
+    width: 80px;
+    margin: 6px;
+    right: 0;
+
+    background: white;
+    border: none;
+    -webkit-box-shadow: 10px 10px 12px -15px #b2b8d5;
+    -moz-box-shadow: 10px 10px 12px -15px #b2b8d5;
+    box-shadow: 10px 10px 12px -15px #b2b8d5;
+}
+
+#media_type {
+    /* Do cool stuff here */
 }
 
 #heading {
     text-align: center;
     font-size: 30px;
-    padding: 10px;
+    padding-top: 15px;
+    color: #1F2C43;
 }
 
 #form {
     padding: 15px;
-}
-
-.results {
-    padding: 0 5% 0 5%;
 }
 
 .resultInstance {
@@ -30,6 +82,21 @@
     margin: 5px;
     border: 1px solid black;
     max-height: 200px;
+
+border-radius: 5px;
+    animation-duration: 0.5s;
+    animation-delay: 0.5s;
+    animation-name: animate-fade;
+    animation-fill-mode: backwards;
+}
+
+@keyframes animate-fade {
+    0% { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.results {
+    padding: 0 5% 0 5%;
 }
 
 .resultInstanceTitle {

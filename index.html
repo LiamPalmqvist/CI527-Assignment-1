@@ -4,24 +4,28 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>NASA REST API</title>
-		<link rel="stylesheet" href="index.css"></style>
+		<link rel="stylesheet" href="index.css">
 		<script src="index.js"></script>
 	</head>
 	<body>
         <div class="body">
             <h1 id="heading">NASA REST API</h1>
             <form id="form" onsubmit="return false">
-                <input type="text" id="search" placeholder="Search" />
-				<select type="selection" id="media_type">
-					<option value="all">All</option>
-					<option value="image">Image</option>
-					<option value="video">Video</option>
-					<option value="audio">Audio</option>
-				</select>
-                <button type="submit" id="submit">Submit</button>
+				<div id="searchContainer">
+					<div id="searchInput">
+						<input type="text" id="search" placeholder="Search" />
+						<button type="submit" id="submit">Submit</button>
+					</div>
+					<select id="media_type">
+						<option value="all">All</option>
+						<option value="image">Image</option>
+						<option value="video">Video</option>
+						<option value="audio">Audio</option>
+					</select>
+				</div>
             </form>
         </div>
 
-		<div class="results" class="results"></div>
+		<div class="results"></div>
 	</body>
 </html>
