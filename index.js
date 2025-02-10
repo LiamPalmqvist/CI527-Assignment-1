@@ -2,8 +2,11 @@ baseHTML = "";
 state = {
     query: "",
     media_type: "",
+    year_start: "",
+    //tags: [],
     data: {}
 };
+base = window.location.href.substring(0, window.location.href.lastIndexOf("/") + 1);
 
 /**
  * @description Event listener for the load event. Loads the search results if the query exists.
@@ -13,7 +16,6 @@ state = {
 window.addEventListener("load", function () {
 	// Get the base and query from the URL
     const url = window.location.href;
-    const base = url.substring(0, url.lastIndexOf("/") + 1);
     const query = url.substring(url.lastIndexOf("/") + 1);
 
     baseHTML = document.querySelector(".results").innerHTML;
@@ -24,13 +26,12 @@ window.addEventListener("load", function () {
         const split = query.split("?");
         let searchParams = new URLSearchParams();
     
+        // Split the search query into the search parameters
         for (let param of split[1].split("&")) {
             let p = param.split("=");
             searchParams.append(p[0], p[1]);
         }
     
-        console.log(new URL(base + "?") + searchParams);
-
         // Submit the request
         document.getElementById("search").value = searchParams.get("q");
         search(base + "?", searchParams, "GET");
@@ -48,9 +49,8 @@ window.addEventListener("load", function () {
 window.addEventListener("popstate", function (event) {
     // if the state exists, display the search form
     if (event.state) {
-        console.log(event.state)
         state = event.state.query;
-        console.log("State: " + state);
+
         // Make sure the data is not empty, if empty, submit the request
         if (state.data === null) {
             // Submit the request
@@ -59,9 +59,9 @@ window.addEventListener("popstate", function (event) {
 
         // Otherwise, display the search results
         } else {
-            console.log("Displaying search results for " + state.query);
             displaySearchResults(state.data);
         }
+
     // Otherwise, display the base HTML
     } else {
         document.querySelector(".results").innerHTML = baseHTML;
@@ -124,14 +124,20 @@ async function search() {
         state.media_type = mediaType;
     }
 
+    var yearStart = document.getElementById("year_start").value;
+    if (yearStart !== "") {
+        queryParameters.append("year_start", yearStart);
+        state.year_start = yearStart;
+    }
+
     const url = new URL("https://images-api.nasa.gov/search?");
 
     // Submit the request
     const data = await submit(url, queryParameters, "GET");
     state.data = data;
 
-    // Push the query to the history after "/search"
-    history.pushState({ query: state }, "", "/?q=" + query + "&media_type=" + mediaType);
+    // Push the state to the history
+    history.pushState({ query: state }, "", "?" + queryParameters.toString());
     //history.pushState({ query: queryParameters }, "Search Results", url);
 
     // Check if the data is null
@@ -155,11 +161,12 @@ async function search() {
 /**
  * @async
  * @description Requests the next page of search results
+ * @param       {string} direction The direction of the request
  * @returns     {void}
  */
-async function requestNext() {
+async function requestNext(direction) {
     // Get the next link
-    const link = document.querySelector(".nextLink").href;
+    const link = document.querySelector("#"+direction+".nextLink").href;
     // Split the link into the URL and the query
     const split = link.split("?");
     // Get the queries
@@ -220,6 +227,12 @@ async function displaySearchResults(data) {
         // Append the title to the parent div
         div.appendChild(title);
 
+    
+        // Create a div for the content
+        const content = document.createElement("div");
+        content.classList.add("resultInstanceContent");
+        div.appendChild(content);
+
         // Find the thumbnail image
         const links = data.collection.items[i].links;
         let thumbnail = "";
@@ -233,6 +246,28 @@ async function displaySearchResults(data) {
             console.log(e);
             console.log("No thumbnail found at " + i + ". Please try again.");
         }
+
+
+        // Create the footer
+        const footer = document.createElement("div");
+        footer.classList.add("resultInstanceFooter");
+        footer.innerHTML = "Keywords: ";
+        try {
+            for (let j = 0; j < data.collection.items[i].data[0].keywords.length; j++) {
+                // const keyword = document.createElement("a");
+                const keyword = document.createElement("span");
+                // keyword.href = base + "?keywords=" + data.collection.items[i].data[0].keywords[j];
+                keyword.classList.add("resultInstanceKeyword");
+                keyword.innerText = data.collection.items[i].data[0].keywords[j];
+                footer.appendChild(keyword);
+            }
+        } catch (error) {
+            console.log("No keywords found. Please try again.");
+        }
+
+        div.appendChild(footer);
+
+
 
         // Append the element to the results
         results.appendChild(div);
@@ -250,15 +285,16 @@ async function displaySearchResults(data) {
 
     // Check if the data has a next link
     if (!data.collection.links || data.collection.links.length == 0) {
+        console.log("No more results found.");
     } else {
         document.querySelector(".results").innerHTML += "<h2>More Results:</h2>";
-        document.querySelector(".results").innerHTML += "<a class='nextLink' href=" + data.collection.links[0].href + ">" +	data.collection.links[0].prompt + "</a><br>";
+        document.querySelector(".results").innerHTML += "<a class='nextLink' id='next' href=" + data.collection.links[0].href + ">" +	data.collection.links[0].prompt + "</a><br>";
         const nextLink = document.querySelector(".nextLink");
         nextLink.addEventListener("click", function (event) {
             event.preventDefault();
             document.body.scrollTop = 0; // For Safari
             document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-            requestNext();
+            requestNext("next");
         });
     }
 
@@ -272,7 +308,7 @@ async function displaySearchResults(data) {
  */
 async function loadMedia(elements) {
 
-    let results = document.querySelectorAll(".resultInstance");
+    let results = document.querySelectorAll(".resultInstanceContent");
 
     for (let i = 0; i < elements.length; i++) {
         switch (elements[i].type) {
@@ -383,6 +419,7 @@ async function loadVideo(href, thumbnail) {
 
     // Create the video element
     const videoElement = document.createElement("video");
+    videoElement.classList.add("resultInstanceLink");
     videoElement.classList.add("resultInstanceThumbnail");
     videoElement.controls = true;
     videoElement.preload = "none";

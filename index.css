@@ -81,7 +81,7 @@
     padding: 10px;
     margin: 5px;
     border: 1px solid black;
-    max-height: 200px;
+    max-height: fit-content;
 
 border-radius: 5px;
     animation-duration: 0.5s;
@@ -112,4 +112,25 @@ border-radius: 5px;
 .resultInstanceThumbnail {
     height: 150px;
     padding-bottom: 10px;
+}
+
+.resultInstanceContent {
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+    padding: 0 0 0 5px;
+
+}
+
+.resultInstanceFooter {
+    width: 100%;
+    padding: 0 0 0 5px;
+}
+
+.resultInstanceKeyword {
+    display: inline-block;
+    margin: 0 0 0 5px;
+    padding: 5px;
+    background-color: lightgray;
+    border-radius: 5px;
 }
