@@ -82,8 +82,7 @@
     margin: 5px;
     border: 1px solid black;
     max-height: fit-content;
-
-border-radius: 5px;
+    border-radius: 5px;
     animation-duration: 0.5s;
     animation-delay: 0.5s;
     animation-name: animate-fade;
@@ -100,6 +99,7 @@ border-radius: 5px;
 }
 
 .resultInstanceTitle {
+    text-align: left;
     margin: 5px
 }
 
