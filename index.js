@@ -479,7 +479,7 @@ async function loadVideo(name, href, thumbnail) {
     videoElement.poster = thumbnail;
     videoElement.href = href;
     videoElement.ariaLabel = name;
-    videoElement.crossOrigin = "anonymous";
+    //videoElement.crossOrigin = "anonymous";
     
     // Create the source element
     const source = document.createElement("source");
