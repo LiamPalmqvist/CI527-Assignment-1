@@ -479,6 +479,7 @@ async function loadVideo(name, href, thumbnail) {
     videoElement.poster = thumbnail;
     videoElement.href = href;
     videoElement.ariaLabel = name;
+    videoElement.crossOrigin = "anonymous";
     
     // Create the source element
     const source = document.createElement("source");
@@ -497,6 +498,7 @@ async function loadVideo(name, href, thumbnail) {
                 const track = document.createElement("track");
                 track.src = subtitles;
                 track.kind = "captions";
+                track.srclang = "English";
                 videoElement.appendChild(track);
                 return;
             }
