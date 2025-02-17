@@ -9,7 +9,7 @@
     width: 100%;
     padding: 0 5% 0 5%;
     background-color: #F1F2F8;
-    overflow-clip: true;
+    overflow: clip;
 }
 
 #searchContainer {

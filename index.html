@@ -13,17 +13,17 @@
 			<form id="form" onsubmit="return false">
 				<div id="searchContainer">
 					<div id="searchInput">
-						<input type="text" id="search" placeholder="Search"/>
+						<input type="text" id="search" placeholder="Search" label="text"/>
 						<div id="mediaTypeDiv">
-							<p>Media Type:</p>
-							<select id="media_type">
+							<label for="media_type">Media Type:</label>
+							<select id="media_type" type="media_type">
 								<option value="all">All</option>
 								<option value="image">Image</option>
 								<option value="video">Video</option>
 								<option value="audio">Audio</option>
 							</select>
 						</div>
-						<input type="number" id="year_start" placeholder="Year"/>
+						<input type="number" id="year_start" placeholder="Year" label="number"/>
 						<button type="submit" id="submit">Submit</button>
 					</div>
 				</div>
