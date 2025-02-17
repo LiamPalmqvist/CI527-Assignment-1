@@ -468,6 +468,7 @@ async function loadVideo(name, href, thumbnail) {
     let videoURL = "";
     const fetchURL = await submit(href, "", "GET");
     videoURL = fetchURL[0];
+    videoURL = videoURL.replace("http://", "https://");
     
     // Create the video element
     const videoElement = document.createElement("video");
@@ -492,6 +493,7 @@ async function loadVideo(name, href, thumbnail) {
         fetchURL.forEach((item) => {
             if (item.includes(".vtt")) {
                 subtitles = item;
+                subtitles = subtitles.replace("http://", "https://");
                 const track = document.createElement("track");
                 track.src = subtitles;
                 track.kind = "captions";
