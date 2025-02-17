@@ -13,7 +13,9 @@
 			<form id="form" onsubmit="return false">
 				<div id="searchContainer">
 					<div id="searchInput">
-						<input type="text" id="search" placeholder="Search" label="text"/>
+						<label for="search">
+							<input type="text" id="search" placeholder="Search" label="text"/>
+						</label>
 						<div id="mediaTypeDiv">
 							<label for="media_type">Media Type:</label>
 							<select id="media_type" type="media_type">
@@ -23,7 +25,9 @@
 								<option value="audio">Audio</option>
 							</select>
 						</div>
-						<input type="number" id="year_start" placeholder="Year" label="number"/>
+						<label id="year_start_label" for="year_start">
+							<input type="number" id="year_start" placeholder="Year" label="number"/>
+						</label>
 						<button type="submit" id="submit">Submit</button>
 					</div>
 				</div>
