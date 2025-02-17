@@ -14,15 +14,18 @@
 				<div id="searchContainer">
 					<div id="searchInput">
 						<input type="text" id="search" placeholder="Search"/>
+						<div id="mediaTypeDiv">
+							<p>Media Type:</p>
+							<select id="media_type">
+								<option value="all">All</option>
+								<option value="image">Image</option>
+								<option value="video">Video</option>
+								<option value="audio">Audio</option>
+							</select>
+						</div>
+						<input type="number" id="year_start" placeholder="Year"/>
 						<button type="submit" id="submit">Submit</button>
 					</div>
-					<select id="media_type">
-						<option value="all">All</option>
-						<option value="image">Image</option>
-						<option value="video">Video</option>
-						<option value="audio">Audio</option>
-					</select>
-					<input type="number" id="year_start" placeholder="Year"/>
 				</div>
 			</form>
 		</div>
