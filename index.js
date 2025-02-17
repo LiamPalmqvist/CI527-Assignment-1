@@ -3,13 +3,13 @@ state = {
     query: "",
     media_type: "",
     year_start: "",
-    //tags: [],
+    tags: [],
     data: {}
 };
 base = window.location.href.substring(0, window.location.href.lastIndexOf("/") + 1);
 
 /**
- * @description Event listener for the load event. Loads the search results if the query exists.
+ * Event listener for the load event. Loads the search results if the query exists.
  * @param       {Event} event
  * @returns     {void}
  */
@@ -47,7 +47,7 @@ window.addEventListener("load", function () {
 });
 
 /**
- * @description Event listener for the popstate event. Displays the search form if the state exists.
+ * Event listener for the popstate event. Displays the search form if the state exists.
  * @param       {Event} event
  * @returns     {void}
  */
@@ -74,8 +74,8 @@ window.addEventListener("popstate", function (event) {
 });
 
 /**
+ * Submits a GET request to the specified URL with the specified query.
  * @async
- * @description Submits a GET request to the specified URL with the specified query.
  * @param       {string} url
  * @param       {URLSearchParams} query
  * @returns     {Promise<JSON>}
@@ -110,8 +110,8 @@ async function submit(url, query, method) {
 };
 
 /**
+ * Searches for images based on the user's query. This is used ONLY in the search form
  * @async
- * @description Searches for images based on the user's query. This is used ONLY in the search form
  * @param       {URLSearchParams} query (Optional)
  * @returns     {Promise<void>}
  */
@@ -177,11 +177,19 @@ async function search() {
     }
 };
 
+/**
+ * Searches the NASA API based on the URL search parameters
+ * @async
+ * @param {URLSearchParams} query 
+ * @param {String} method 
+ * @returns {Void}
+ */
 async function URLsearch(query, method) {
     const url = new URL("https://images-api.nasa.gov/search?");
     // Submit the request
     const data = await submit(url, query, method);
     state.data = data;
+    state.tags = query.getAll("keywords");
 
     // Push the state to the history
     history.pushState({ query: state }, "", "?" + query.toString());
@@ -205,8 +213,8 @@ async function URLsearch(query, method) {
 };
 
 /**
+ * Requests the next page of search results
  * @async
- * @description Requests the next page of search results
  * @param       {string} direction The direction of the request
  * @returns     {void}
  */
@@ -231,7 +239,7 @@ async function requestNext(direction) {
 };
 
 /**
- * @desctiprion Displays an error message to the user
+ * Displays an error message to the user
  * @param       {string} message
  * @returns     {void}
  */
@@ -244,8 +252,8 @@ function displayErrorMessage(message) {
 };
 
 /**
+ * Displays the search results to the user
  * @async
- * @description Displays the search results to the user
  * @param       {json} data
  * @returns     {void}
  */
@@ -348,8 +356,8 @@ async function displaySearchResults(data) {
 };
 
 /**
+ * Loads all of the media elements into the results asynchronously
  * @async
- * @description Loads all of the media elements into the results asynchronously
  * @param {Object} elements 
  */
 async function loadMedia(elements) {
@@ -383,8 +391,8 @@ async function loadMedia(elements) {
 };
 
 /**
+ * Creates a promise of an image element to return to the DOM
  * @async
- * @description Creates a promise of an image element to return to the DOM
  * @param       {String} title
  * @param       {json} links
  * @param       {String} preview
@@ -451,8 +459,8 @@ async function loadAudio(href) {
 };
 
 /**
+ * Creates a promise of a video element to return to the DOM
  * @async
- * @description Creates a promise of a video element to return to the DOM
  * @param {String} href The link to the video
  * @param {String} thumbnail The video thumbnail
  * @returns {HTMLVideoElement}
