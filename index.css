@@ -47,6 +47,14 @@
     background: transparent;
 } #search:focus {
     outline: none;
+    background: transparent;
+} #search:-webkit-autofill,
+  #search:-webkit-autofill:hover,
+  #search:-webkit-autofill:focus,
+  #search:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: black;
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 #submit {
