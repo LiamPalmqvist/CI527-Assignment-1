@@ -26,14 +26,11 @@ window.addEventListener("load", function () {
         const split = query.split("?");
         if (split[1] !== "") {
             let searchParams = new URLSearchParams();
-        
-            console.log(split);
-    
+            
             // Split the search query into the search parameters
             for (let param of split[1].split("&")) {
                 let p = param.split("=");
                 searchParams.append(p[0], decodeURIComponent(p[1]));
-                console.log(p[0] + ": " + decodeURIComponent(p[1]));
             }
     
             // Submit the request
@@ -84,8 +81,6 @@ async function submit(url, query, method) {
     // console.log("Query: " + query);
     const response = await fetch(url + query, { method: method });
     
-    console.log(url + query);
-
     switch (response.status) {
         case 200:
             // console.log("Response Status: 200");
@@ -121,8 +116,6 @@ async function search() {
     // Create a new query parameters object
     var queryParameters = new URLSearchParams();
     
-    
-
     // Get the user's query
     var query = document.getElementById("search").value;
     if (query === "") {
@@ -334,6 +327,8 @@ async function displaySearchResults(data) {
             href: data.collection.items[i].href,
             name: data.collection.items[i].data[0].title,
         });
+
+        console.log(data.collection.items[i].data[0].title);
     }
 
 
@@ -374,13 +369,13 @@ async function loadMedia(elements) {
                 break;
             case "audio":
                 // This is an async function which returns a promise which is then appended to the results once it is resolved
-                loadAudio(elements[i].href).then((result) => {
+                loadAudio(elements[i].name, elements[i].href).then((result) => {
                     results[i].appendChild(result);
                 });
                 break;
             case "video":
                 // This is an async function which returns a promise which is then appended to the results once it is resolved
-                loadVideo(elements[i].href, elements[i].preview).then((result) => {
+                loadVideo(elements[i].name, elements[i].href, elements[i].preview).then((result) => {
                     results[i].appendChild(result);
                 });
                 break;
@@ -434,10 +429,11 @@ async function loadImage(title, links, preview) {
 /**
  * @async
  * @description Creates a promise of an audio element to return to the DOM
- * @param       {String} href
+ * @param       {String} name The name of the audio file
+ * @param       {String} href The link to the audio file
  * @returns     {Promise<HTMLAudioElement>}
  */
-async function loadAudio(href) {
+async function loadAudio(name, href) {
 
     // Fetch the audio file
     let audioURL = "";
@@ -447,6 +443,7 @@ async function loadAudio(href) {
     // Create the audio element
     const audioElement = document.createElement("audio");
     audioElement.controls = true;
+    audioElement.ariaLabel = name;
 
     // Create the source element
     const source = document.createElement("source");
@@ -461,16 +458,17 @@ async function loadAudio(href) {
 /**
  * Creates a promise of a video element to return to the DOM
  * @async
+ * @param {String} name The name of the video
  * @param {String} href The link to the video
  * @param {String} thumbnail The video thumbnail
  * @returns {HTMLVideoElement}
  */
-async function loadVideo(href, thumbnail) {
+async function loadVideo(name, href, thumbnail) {
     // Fetch the video file
     let videoURL = "";
     const fetchURL = await submit(href, "", "GET");
     videoURL = fetchURL[0];
-
+    
     // Create the video element
     const videoElement = document.createElement("video");
     videoElement.classList.add("resultInstanceLink");
@@ -479,13 +477,32 @@ async function loadVideo(href, thumbnail) {
     videoElement.preload = "none";
     videoElement.poster = thumbnail;
     videoElement.href = href;
-
+    videoElement.ariaLabel = name;
+    
     // Create the source element
     const source = document.createElement("source");
     source.src = videoURL;
-
+    
     // Append the source to the video element
     videoElement.appendChild(source);
-
+    
+    // Find the subtitles
+    let subtitles = "";
+    try {
+        fetchURL.forEach((item) => {
+            if (item.includes(".vtt")) {
+                subtitles = item;
+                const track = document.createElement("track");
+                track.src = subtitles;
+                track.kind = "captions";
+                videoElement.appendChild(track);
+                return;
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        console.log("No subtitles found for this video.");
+    }
+    
     return videoElement;
 };
