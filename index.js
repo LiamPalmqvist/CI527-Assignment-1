@@ -24,17 +24,22 @@ window.addEventListener("load", function () {
     if (query) {
         // Split the query into the search query and the media type
         const split = query.split("?");
-        let searchParams = new URLSearchParams();
+        if (split[1] !== "") {
+            let searchParams = new URLSearchParams();
+        
+            console.log(split);
     
-        // Split the search query into the search parameters
-        for (let param of split[1].split("&")) {
-            let p = param.split("=");
-            searchParams.append(p[0], p[1]);
+            // Split the search query into the search parameters
+            for (let param of split[1].split("&")) {
+                let p = param.split("=");
+                searchParams.append(p[0], decodeURIComponent(p[1]));
+                console.log(p[0] + ": " + decodeURIComponent(p[1]));
+            }
+    
+            // Submit the request
+            document.getElementById("search").value = searchParams.get("q");
+            URLsearch(searchParams, "GET");
         }
-    
-        // Submit the request
-        document.getElementById("search").value = searchParams.get("q");
-        search(base + "?", searchParams, "GET");
     }
     
     // Add event listener to the search form
@@ -78,6 +83,8 @@ window.addEventListener("popstate", function (event) {
 async function submit(url, query, method) {
     // console.log("Query: " + query);
     const response = await fetch(url + query, { method: method });
+    
+    console.log(url + query);
 
     switch (response.status) {
         case 200:
@@ -105,18 +112,28 @@ async function submit(url, query, method) {
 /**
  * @async
  * @description Searches for images based on the user's query. This is used ONLY in the search form
+ * @param       {URLSearchParams} query (Optional)
  * @returns     {Promise<void>}
  */
 async function search() {
+    const url = new URL("https://images-api.nasa.gov/search?");
+    
+    // Create a new query parameters object
+    var queryParameters = new URLSearchParams();
+    
+    
+
     // Get the user's query
     var query = document.getElementById("search").value;
     if (query === "") {
-        displayErrorMessage("Please enter a search query.");
-        return;
+        
+        // displayErrorMessage("Please enter a search query.");
+        // return;
+    } else {
+        queryParameters.append("q", query);
+        state.query = query;
     }
 
-    var queryParameters = new URLSearchParams({ q: query });
-    state.query = query;
 
     var mediaType = document.getElementById("media_type").value;
     if (mediaType !== "all") {
@@ -130,7 +147,10 @@ async function search() {
         state.year_start = yearStart;
     }
 
-    const url = new URL("https://images-api.nasa.gov/search?");
+    if (queryParameters.size === 0) {
+        // displayErrorMessage("Please enter a search query.");
+        // return;
+    }
 
     // Submit the request
     const data = await submit(url, queryParameters, "GET");
@@ -138,7 +158,33 @@ async function search() {
 
     // Push the state to the history
     history.pushState({ query: state }, "", "?" + queryParameters.toString());
-    //history.pushState({ query: queryParameters }, "Search Results", url);
+
+    // Check if the data is null
+    if (data === null) {
+        console.log("Data is null");
+        // Return nothing. Error handling is done in the submit function.
+        return;
+    } else {
+        // Check if the data is empty
+        if (data.collection.items.length === 0) {
+            // Display error message
+            displayErrorMessage("No results found. Please try again.");
+            return;
+        } else {
+            // Otherwise, display the search results
+            displaySearchResults(data);
+        }
+    }
+};
+
+async function URLsearch(query, method) {
+    const url = new URL("https://images-api.nasa.gov/search?");
+    // Submit the request
+    const data = await submit(url, query, method);
+    state.data = data;
+
+    // Push the state to the history
+    history.pushState({ query: state }, "", "?" + query.toString());
 
     // Check if the data is null
     if (data === null) {
@@ -254,9 +300,9 @@ async function displaySearchResults(data) {
         footer.innerHTML = "Keywords: ";
         try {
             for (let j = 0; j < data.collection.items[i].data[0].keywords.length; j++) {
-                // const keyword = document.createElement("a");
-                const keyword = document.createElement("span");
-                // keyword.href = base + "?keywords=" + data.collection.items[i].data[0].keywords[j];
+                const keyword = document.createElement("a");
+                // const keyword = document.createElement("span");
+                keyword.href = base + "?keywords=" + data.collection.items[i].data[0].keywords[j];
                 keyword.classList.add("resultInstanceKeyword");
                 keyword.innerText = data.collection.items[i].data[0].keywords[j];
                 footer.appendChild(keyword);
