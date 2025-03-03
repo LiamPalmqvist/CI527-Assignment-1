@@ -326,6 +326,7 @@ async function displaySearchResults(data) {
             preview: thumbnail,
             href: data.collection.items[i].href,
             name: data.collection.items[i].data[0].title,
+            description: data.collection.items[i].data[0].description
         });
 
         console.log(data.collection.items[i].data[0].title);
@@ -365,18 +366,48 @@ async function loadMedia(elements) {
                 // This is an async function which returns a promise which is then appended to the results once it is resolved
                 loadImage(elements[i].name, elements[i].links, elements[i].preview).then((result) => {
                     results[i].appendChild(result);
+                    var description = document.createElement("div");
+                    description.classList.add("resultInstanceDescription");
+                    
+                    if (elements[i].description.length > 700) {
+                        description.innerText = elements[i].description.substring(0, 700) + "...";
+                    } else {
+                        description.innerText = elements[i].description;
+                    }
+                    
+                    results[i].appendChild(description);
                 });
                 break;
             case "audio":
                 // This is an async function which returns a promise which is then appended to the results once it is resolved
                 loadAudio(elements[i].name, elements[i].href).then((result) => {
                     results[i].appendChild(result);
+                    var description = document.createElement("div");
+                    description.classList.add("resultInstanceDescription");
+                    
+                    if (elements[i].description.length > 700) {
+                        description.innerText = elements[i].description.substring(0, 700) + "...";
+                    } else {
+                        description.innerText = elements[i].description;
+                    }
+                    
+                    results[i].appendChild(description);
                 });
                 break;
             case "video":
                 // This is an async function which returns a promise which is then appended to the results once it is resolved
                 loadVideo(elements[i].name, elements[i].href, elements[i].preview).then((result) => {
                     results[i].appendChild(result);
+                    var description = document.createElement("div");
+                    description.classList.add("resultInstanceDescription");
+                    
+                    if (elements[i].description.length > 700) {
+                        description.innerText = elements[i].description.substring(0, 700) + "...";
+                    } else {
+                        description.innerText = elements[i].description;
+                    }
+                    
+                    results[i].appendChild(description);
                 });
                 break;
             default:
@@ -451,7 +482,7 @@ async function loadAudio(name, href) {
 
     // Append the source to the audio element
     audioElement.appendChild(source);
-    
+
     return audioElement;
 };
 
@@ -487,7 +518,7 @@ async function loadVideo(name, href, thumbnail) {
     
     // Append the source to the video element
     videoElement.appendChild(source);
-    
+
     // Find the subtitles
     let subtitles = "";
     try {

@@ -154,11 +154,17 @@
 }
 
 .resultInstanceContent {
-    display: inline-block;
+    display: flex;
     vertical-align: top;
     width: 100%;
     padding: 0 0 0 5px;
 
+}
+
+.resultInstanceDescription {
+    display: inline-block;
+    width: 100%;
+    padding: 0 0 0 10px;
 }
 
 .resultInstanceFooter {
