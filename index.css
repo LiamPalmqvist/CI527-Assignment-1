@@ -12,6 +12,29 @@
     overflow: clip;
 }
 
+.error {
+    display: block;
+    text-align: center;
+    font-size: 20px;
+    padding-top: 15px;
+    color: #e64141;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+}
+
+.loadingImage {
+    width: 60%;
+}
+
+.hidden {
+    display: none;
+}
+
 #searchContainer {
     display: flex;
     width: min(100%, 600px);
@@ -158,13 +181,13 @@
     vertical-align: top;
     width: 100%;
     padding: 0 0 0 5px;
-
 }
 
 .resultInstanceDescription {
     display: inline-block;
     width: 100%;
     padding: 0 0 0 10px;
+    text-overflow: ellipsis;
 }
 
 .resultInstanceFooter {

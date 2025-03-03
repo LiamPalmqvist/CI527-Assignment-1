@@ -13,7 +13,7 @@ base = window.location.href.substring(0, window.location.href.lastIndexOf("/") +
  * @param       {Event} event
  * @returns     {void}
  */
-window.addEventListener("load", function () {
+window.addEventListener("load", function (event) {
 	// Get the base and query from the URL
     const url = window.location.href;
     const query = url.substring(url.lastIndexOf("/") + 1);
@@ -34,13 +34,13 @@ window.addEventListener("load", function () {
             }
     
             // Submit the request
-            document.getElementById("search").value = searchParams.get("q");
+            document.querySelector("#search").value = searchParams.get("q");
             URLsearch(searchParams, "GET");
         }
     }
     
     // Add event listener to the search form
-    document.getElementById("form").addEventListener("submit", search);
+    document.querySelector("#form").addEventListener("submit", search);
 });
 
 /**
@@ -56,7 +56,7 @@ window.addEventListener("popstate", function (event) {
         // Make sure the data is not empty, if empty, submit the request
         if (state.data === null) {
             // Submit the request
-            document.getElementById("search").value = searchParams.get("q");
+            document.querySelector("#search").value = searchParams.get("q");
             search(base + "?", searchParams, "GET");
 
         // Otherwise, display the search results
@@ -78,7 +78,6 @@ window.addEventListener("popstate", function (event) {
  * @returns     {Promise<JSON>}
  */
 async function submit(url, query, method) {
-    // console.log("Query: " + query);
     const response = await fetch(url + query, { method: method });
     
     switch (response.status) {
@@ -94,7 +93,10 @@ async function submit(url, query, method) {
             displayErrorMessage("Internal server error. Please try again.");
             // console.log("Response Status: 500");
             return null;
+        case 403:
+            return null;
         default:
+            console.log(response.status);
             displayErrorMessage("An error occurred. Please try again.");
             // console.log("Response Status: " + response.status);
             return null;
@@ -110,14 +112,27 @@ async function submit(url, query, method) {
  * @param       {URLSearchParams} query (Optional)
  * @returns     {Promise<void>}
  */
-async function search() {
+
+async function search(_event) {
+    // Get the loading, error and results elements
+    const error = document.querySelector(".error");
+    error.classList.add("hidden");
+
+    const loading = document.querySelector(".loading");
+    loading.classList.remove("hidden");
+
+    const results = document.querySelector(".results");
+    results.classList.add("hidden");
+
+
+
     const url = new URL("https://images-api.nasa.gov/search?");
     
     // Create a new query parameters object
-    var queryParameters = new URLSearchParams();
+    const queryParameters = new URLSearchParams();
     
     // Get the user's query
-    var query = document.getElementById("search").value;
+    const query = document.querySelector("#search").value;
     if (query === "") {
         
         // displayErrorMessage("Please enter a search query.");
@@ -128,13 +143,13 @@ async function search() {
     }
 
 
-    var mediaType = document.getElementById("media_type").value;
+    const mediaType = document.querySelector("#media_type").value;
     if (mediaType !== "all") {
         queryParameters.append("media_type", mediaType);
         state.media_type = mediaType;
     }
 
-    var yearStart = document.getElementById("year_start").value;
+    const yearStart = document.querySelector("#year_start").value;
     if (yearStart !== "") {
         queryParameters.append("year_start", yearStart);
         state.year_start = yearStart;
@@ -237,11 +252,12 @@ async function requestNext(direction) {
  * @returns     {void}
  */
 function displayErrorMessage(message) {
-    title = document.querySelector(".results");
-    title.innerHTML = "<h1>" + message + "</h1>";
-    title.style.fontFamily = "Arial";
-    title.style.color = "red";
-    title.style.textAlign = "center";
+    title = document.querySelector(".error");
+    title.querySelector("h1").innerText = message;
+    title.classList.remove("hidden");
+
+    const loading = document.querySelector(".loading");
+    loading.classList.add("hidden");
 };
 
 /**
@@ -252,10 +268,14 @@ function displayErrorMessage(message) {
  */
 async function displaySearchResults(data) {
 
+    const error = document.querySelector(".error");
+    error.classList.add("hidden");
+    const loading = document.querySelector(".loading");
+    loading.classList.add("hidden");
+
     console.log(data);
     const results = document.querySelector(".results");
-    results.style.color = "black";
-    results.style.textAlign = "left";
+    results.classList.remove("hidden");
     results.innerHTML = "";
 
     let elements = [];
@@ -298,7 +318,7 @@ async function displaySearchResults(data) {
         // Create the footer
         const footer = document.createElement("div");
         footer.classList.add("resultInstanceFooter");
-        footer.innerHTML = "Keywords: ";
+        footer.innerText = "Keywords: ";
         try {
             for (let j = 0; j < data.collection.items[i].data[0].keywords.length; j++) {
                 const keyword = document.createElement("a");
@@ -365,15 +385,12 @@ async function loadMedia(elements) {
             case "image":
                 // This is an async function which returns a promise which is then appended to the results once it is resolved
                 loadImage(elements[i].name, elements[i].links, elements[i].preview).then((result) => {
+                    results[i].innerHTML = "";
+                    
                     results[i].appendChild(result);
                     var description = document.createElement("div");
                     description.classList.add("resultInstanceDescription");
-                    
-                    if (elements[i].description.length > 700) {
-                        description.innerText = elements[i].description.substring(0, 700) + "...";
-                    } else {
-                        description.innerText = elements[i].description;
-                    }
+                    description.innerText = elements[i].description;
                     
                     results[i].appendChild(description);
                 });
@@ -381,15 +398,12 @@ async function loadMedia(elements) {
             case "audio":
                 // This is an async function which returns a promise which is then appended to the results once it is resolved
                 loadAudio(elements[i].name, elements[i].href).then((result) => {
+                    results[i].innerHTML = "";
+
                     results[i].appendChild(result);
                     var description = document.createElement("div");
                     description.classList.add("resultInstanceDescription");
-                    
-                    if (elements[i].description.length > 700) {
-                        description.innerText = elements[i].description.substring(0, 700) + "...";
-                    } else {
-                        description.innerText = elements[i].description;
-                    }
+                    description.innerText = elements[i].description;
                     
                     results[i].appendChild(description);
                 });
@@ -397,15 +411,12 @@ async function loadMedia(elements) {
             case "video":
                 // This is an async function which returns a promise which is then appended to the results once it is resolved
                 loadVideo(elements[i].name, elements[i].href, elements[i].preview).then((result) => {
+                    results[i].innerHTML = "";
+
                     results[i].appendChild(result);
                     var description = document.createElement("div");
                     description.classList.add("resultInstanceDescription");
-                    
-                    if (elements[i].description.length > 700) {
-                        description.innerText = elements[i].description.substring(0, 700) + "...";
-                    } else {
-                        description.innerText = elements[i].description;
-                    }
+                    description.innerText = elements[i].description;
                     
                     results[i].appendChild(description);
                 });
@@ -429,6 +440,7 @@ async function loadImage(title, links, preview) {
     let size = 0;
     let href = "";
 
+    
     try {
         links.forEach((item) => {
             if (item.size > size) {
@@ -440,18 +452,25 @@ async function loadImage(title, links, preview) {
         console.log(e);
         console.log("No image found. Please try again.");
     }
-
+    
     // Create the link
     const link = document.createElement("a");
     link.classList.add("resultInstanceLink");
     link.href = href;
-
+    
     // Create the thumbnail
     const image = document.createElement("img");
     image.classList.add("resultInstanceThumbnail");
-    image.src = preview;
     image.alt = title;
-
+    
+    if (preview === null || preview === "") {
+        console.log("No image found. Please try again.");
+        image.src = "/img/unavailable.png";
+        return;
+    } else {
+        image.src = preview;
+    }
+    
     link.appendChild(image);
 
     return link;
@@ -468,7 +487,27 @@ async function loadAudio(name, href) {
 
     // Fetch the audio file
     let audioURL = "";
-    const fetchURL = await submit(href, "", "GET");
+    var fetchURL;
+    
+    try {
+        fetchURL = await submit(href, "", "GET");
+    } 
+    catch (e) {
+        console.log("No audio found. Please try again.");
+    }
+
+    if (fetchURL === null || fetchURL === "") {
+        console.log("No video found. Please try again.");
+        
+        // Create the thumbnail
+        const image = document.createElement("img");
+        image.classList.add("resultInstanceThumbnail");
+        image.alt = "Video unavailable";
+        image.src = "/img/unavailable.png";
+
+        return image;
+    }
+
     audioURL = await fetchURL[0];
 
     // Create the audio element
@@ -496,13 +535,35 @@ async function loadAudio(name, href) {
  */
 async function loadVideo(name, href, thumbnail) {
     // Fetch the video file
+    var fetchURL = "";
+    
+    try {
+        // Sometimes the video will not be available, so we need to catch the error
+        fetchURL = await submit(href, "", "GET");
+    
+    } catch (e) {
+        console.log("No video found. Please try another URL.");
+    }
+
+    if (fetchURL === null || fetchURL === "") {
+        console.log("No video found. Please try again.");
+        
+        // Create the thumbnail
+        const image = document.createElement("img");
+        image.classList.add("resultInstanceThumbnail");
+        image.alt = "Video unavailable";
+        image.src = "/img/unavailable.png";
+
+        return image;
+    }
+
+    const videoElement = document.createElement("video");
+    
     let videoURL = "";
-    const fetchURL = await submit(href, "", "GET");
+    // Sometimes a video will not be available, so we need to catch the error
     videoURL = fetchURL[0];
     videoURL = videoURL.replace("http://", "https://");
-    
     // Create the video element
-    const videoElement = document.createElement("video");
     videoElement.classList.add("resultInstanceLink");
     videoElement.classList.add("resultInstanceThumbnail");
     videoElement.controls = true;
@@ -535,9 +596,9 @@ async function loadVideo(name, href, thumbnail) {
             }
         });
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         console.log("No subtitles found for this video.");
+        
     }
-    
     return videoElement;
 };
