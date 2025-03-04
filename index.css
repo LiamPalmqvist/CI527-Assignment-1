@@ -261,6 +261,7 @@
         width: 25%;
         border-radius: 10px;
         margin: 5px 5px 0 0;
+        color: black;
     }
 
     /* The div which contains the search options */
