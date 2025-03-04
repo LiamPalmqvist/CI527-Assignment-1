@@ -113,7 +113,10 @@ async function submit(url, query, method) {
  * @returns     {Promise<void>}
  */
 
-async function search(_event) {
+async function search(event) {
+    // Prevent the default action from happening when the button is clicked
+    event.preventDefault();
+
     // Get the loading, error and results elements
     const error = document.querySelector(".error");
     error.classList.add("hidden");
@@ -273,7 +276,7 @@ async function displaySearchResults(data) {
     const loading = document.querySelector(".loading");
     loading.classList.add("hidden");
 
-    console.log(data);
+    // console.log(data);
     const results = document.querySelector(".results");
     results.classList.remove("hidden");
     results.innerHTML = "";
@@ -310,8 +313,8 @@ async function displaySearchResults(data) {
                 }
             });
         } catch (e) {
-            console.log(e);
-            console.log("No thumbnail found at " + i + ". Please try again.");
+            // console.log(e);
+            console.log("No thumbnail found for " + data.collection.items[i].title + ". Please try again.");
         }
 
 
@@ -349,7 +352,7 @@ async function displaySearchResults(data) {
             description: data.collection.items[i].data[0].description
         });
 
-        console.log(data.collection.items[i].data[0].title);
+        // console.log(data.collection.items[i].data[0].title);
     }
 
 
@@ -387,11 +390,21 @@ async function loadMedia(elements) {
                 loadImage(elements[i].name, elements[i].links, elements[i].preview).then((result) => {
                     results[i].innerHTML = "";
                     
-                    results[i].appendChild(result);
+                    try {
+                        results[i].appendChild(result);
+                    } catch (e) {
+                        console.log(e);
+                        console.log("No image found for " + elements[i].name + ". Please try again.");
+                        const div = document.createElement("img");
+                        div.classList.add("resultInstanceThumbnail");
+                        div.src = "/img/unavailable.png";
+                        results[i].appendChild(div);
+                    }
+                    
                     var description = document.createElement("div");
                     description.classList.add("resultInstanceDescription");
-                    description.innerText = elements[i].description;
-                    
+                    description.innerText = elements[i].description.length > 470 ? elements[i].description.substring(0, 470) + "..." : elements[i].description;
+
                     results[i].appendChild(description);
                 });
                 break;
@@ -403,7 +416,8 @@ async function loadMedia(elements) {
                     results[i].appendChild(result);
                     var description = document.createElement("div");
                     description.classList.add("resultInstanceDescription");
-                    description.innerText = elements[i].description;
+                    
+                    description.innerText = elements[i].description.length > 470 ? elements[i].description.substring(0, 470) + "..." : elements[i].description;
                     
                     results[i].appendChild(description);
                 });
@@ -416,7 +430,7 @@ async function loadMedia(elements) {
                     results[i].appendChild(result);
                     var description = document.createElement("div");
                     description.classList.add("resultInstanceDescription");
-                    description.innerText = elements[i].description;
+                    description.innerText = elements[i].description.length > 470 ? elements[i].description.substring(0, 470) + "..." : elements[i].description;
                     
                     results[i].appendChild(description);
                 });
@@ -464,7 +478,7 @@ async function loadImage(title, links, preview) {
     image.alt = title;
     
     if (preview === null || preview === "") {
-        console.log("No image found. Please try again.");
+        console.log("No image found for " + title + ". Please try again.");
         image.src = "/img/unavailable.png";
         return;
     } else {
@@ -546,7 +560,7 @@ async function loadVideo(name, href, thumbnail) {
     }
 
     if (fetchURL === null || fetchURL === "") {
-        console.log("No video found. Please try again.");
+        console.log("No video found for " + name + ". Please try again.");
         
         // Create the thumbnail
         const image = document.createElement("img");

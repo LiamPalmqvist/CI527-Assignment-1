@@ -11,20 +11,22 @@
 		<header>
 			<div class="body">
 				<h1 id="heading">NASA REST API</h1>
-				<form id="form" onsubmit="return false">
+				<form id="form">
 					<div id="searchContainer">
 						<div id="searchInput">
 							<input aria-label="Search box" type="text" id="search" placeholder="Search"/>
-							<div id="mediaTypeDiv">
-								<label for="media_type">Media Type:</label>
-								<select id="media_type" type="media_type">
-									<option value="all">All</option>
-									<option value="image">Image</option>
-									<option value="video">Video</option>
-									<option value="audio">Audio</option>
-								</select>
+							<div id="searchOptions">
+								<div id="mediaTypeDiv">
+									<p>Media Type:</p>
+									<select aria-label="Media type" id="media_type" type="media_type">
+										<option value="all">All</option>
+										<option value="image">Image</option>
+										<option value="video">Video</option>
+										<option value="audio">Audio</option>
+									</select>
+								</div>
+								<input title="Year" type="number" id="year_start" placeholder="Year" aria-label="Year"/>
 							</div>
-							<input title="Year" type="number" id="year_start" placeholder="Year" aria-label="Year"/>
 							<button type="submit" id="submit">Submit</button>
 						</div>
 					</div>

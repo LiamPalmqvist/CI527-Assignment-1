@@ -142,9 +142,9 @@
 .resultInstance {
     padding: 10px;
     margin: 5px;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     max-height: fit-content;
-    border-radius: 5px;
+    /* border-radius: 5px; */
     animation-duration: 0.5s;
     animation-delay: 0.5s;
     animation-name: animate-fade;
@@ -185,8 +185,9 @@
 
 .resultInstanceDescription {
     display: inline-block;
+    max-height: 150px;
     width: 100%;
-    padding: 0 0 0 10px;
+    padding: 0 0 10px 10px;
     text-overflow: ellipsis;
 }
 
@@ -201,4 +202,115 @@
     padding: 5px;
     background-color: lightgray;
     border-radius: 5px;
+}
+
+@media (max-width: 700px) {
+    #heading {
+        font-size: 20px;
+        padding: 5px 0 5px 0;
+    }
+
+    #form {
+        padding: 0;
+        height: 100px;
+    }
+
+    #searchContainer {
+        display: flex;
+        width: min(100%, 600px);
+        height: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+        flex: 1;
+        border-radius: 10px;
+    }
+
+    /* This is the div which contains the entire bar */
+    #searchInput {
+        height: 60px;
+        display: flex;
+        margin-right: 0;
+    }
+
+    /* This is the div which contains the search bar and other options */
+    #searchBox {
+        height: inherit;
+    }
+
+    /* This is the actual search bar */
+    #search {
+        height: 100%;
+        grid-row: 1;
+        font-size: large;
+        width: 88%;
+        margin-right: -10%;
+
+        border-radius: 10px;
+        background: #DDDFEC;
+        border: none;
+        -webkit-box-shadow: inset 10px 10px 12px -10px #b2b8d5;
+        -moz-box-shadow: inset 10px 10px 12px -10px #b2b8d5;
+        box-shadow: inset 10px 10px 12px -10px #b2b8d5;
+    
+        transition: all 0.2s ease-in-out;
+    } 
+
+    /* The submit button */
+    #submit {
+        font-size: large;
+        width: 25%;
+        border-radius: 10px;
+        margin: 5px 5px 0 0;
+    }
+
+    /* The div which contains the search options */
+    #searchOptions {
+        display: flex;
+        height: fit-content;
+        padding-top: 50px;
+        vertical-align: middle;
+        text-align: center;        
+        padding-left: inherit;
+        padding-right: inherit;
+    }
+
+    /* The div which contains the media type */
+    #mediaTypeDiv {
+        position: relative;
+        right: auto;
+        height: 60px;
+        display: flex;
+        padding-left: 10px;
+    }
+
+    #media_type {
+        position: relative;
+        display: flex;
+        height: auto;
+        margin: 0;
+        right: auto;
+    }
+
+    /* The year start input */
+    #year_start {
+        position: relative;
+        display: flex;
+        height: 60px;
+        margin: 0;
+        right: auto;
+    }
+
+    .resultInstanceContent {
+        display: block;
+    }
+    
+    .resultInstanceDescription {
+        padding-left: 0;
+    }
+    
+    .resultInstanceThumbnail {
+        height: auto;
+        width: 100%;
+    }
+
 }
