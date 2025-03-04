@@ -41,6 +41,7 @@ window.addEventListener("load", function (event) {
     
     // Add event listener to the search form
     document.querySelector("#form").addEventListener("submit", search);
+    document.querySelector(".titleLink").href = base;
 });
 
 /**
@@ -400,7 +401,7 @@ async function loadMedia(elements) {
                         div.src = "/img/unavailable.png";
                         results[i].appendChild(div);
                     }
-                    
+
                     var description = document.createElement("div");
                     description.classList.add("resultInstanceDescription");
                     description.innerText = elements[i].description.length > 470 ? elements[i].description.substring(0, 470) + "..." : elements[i].description;
