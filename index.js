@@ -41,7 +41,7 @@ window.addEventListener("load", function (event) {
     
     // Add event listener to the search form
     document.querySelector("#form").addEventListener("submit", search);
-    document.querySelector(".titleLink").href = base;
+    document.querySelector(".titleLink").href = window.location.origin;
 });
 
 /**
